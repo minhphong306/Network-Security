@@ -40,18 +40,28 @@ public class Uuencoding {
 
         return binString;
     }
+    
+    public String getBinarySub32String(String originString) {
+        String binString = "";
+        for (int i = 0; i < originString.length(); i++) {
+            char c = (char)(originString.charAt(i) - 32);
+            binString += this.fillCharToEight(Integer.toBinaryString(c));
+        }
 
-    public List<String> getListUuencodingBinString(String orginString) {
-        int length = orginString.length();
+        return binString;
+    }
+
+    public List<String> getListUuencodingBinString(String bin8) {
+        int length = bin8.length();
         List<String> list = new ArrayList<>();
         for (int i = 0; i < length; i += 6) {
             if ((i + 6) <= length) {
-                list.add(this.fillCharToEight(orginString.substring(i, i + 6)));
+                list.add(this.fillCharToEight(bin8.substring(i, i + 6)));
             }
         }
 
         if (length % 6 != 0) {
-            list.add(this.fillCharToEight(orginString.substring(length - (length % 6), length)));
+            list.add(this.fillCharToEight(bin8.substring(length - (length % 6), length)));
         }
         return list;
     }
@@ -60,18 +70,18 @@ public class Uuencoding {
         return (char) (Integer.parseInt(binaryString, 2) + 32);
     }
     
-    public char getCanReadCharFromBinary2(String binaryString){
+    public char getCharFromBinary(String binaryString){
         return (char) (Integer.parseInt(binaryString, 2));
     }
 
-    public List<String> getListUudecodingBinString(String bin6){
+    public List<String> getListUuDecodingBinString(String bin6){
         List<String> list = new ArrayList<>();
         int length = bin6.length();
         String bin8 = "";
         for (int i = 2; i < length; i += 8) {
-            if ((i + 6) <= length) {
+            //if ((i + 6) <= length) {
                 bin8 += bin6.substring(i, i + 6);
-            }
+           // }
         }
         
         for(int i = 0;i < bin8.length(); i+= 8){
@@ -87,24 +97,26 @@ public class Uuencoding {
         String bin_orgin = uu.getBinaryString(orgin);
         String uuEncode = "";
         String uuDecode = "";
-        String bin_decode;
+        String bin_encode;
         
         List<String> list = uu.getListUuencodingBinString(bin_orgin);
         for(String item : list){
             uuEncode += uu.getCanReadCharFromBinary(item);
         }
         
-        bin_decode = uu.getBinaryString(uuEncode);
-        List<String> list1 = uu.getListUudecodingBinString(bin_decode);
-        for(String item : list){
-            uuDecode += uu.getCanReadCharFromBinary2(item);
+        bin_encode = uu.getBinarySub32String(uuEncode);
+        List<String> list1 = uu.getListUuDecodingBinString(bin_encode);
+        for(String item : list1){
+            uuDecode += uu.getCharFromBinary(item);
+            
         }
         
-        System.out.println("- Orgin string: " + orgin);
-        System.out.println("- Orgin binary string: " + bin_orgin);
-        System.out.println("- Uuencode str: " + uuEncode);
+        System.out.println("- Origin string: " + orgin);
+        System.out.println("- Origin binary string: " + bin_orgin);
         
-        System.out.println("- Uuencode bin_str: " + bin_decode);
-        System.out.println("- Uudecode Str: " + uuDecode);
+        System.out.println("- Encode str: " + uuEncode);        
+        System.out.println("- Encode binary string: " + bin_encode);
+        
+        System.out.println("- Decode Str: " + uuDecode);
     }
 }
